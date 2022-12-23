@@ -20,6 +20,7 @@ app.use((req, res, next) => {
 
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
+const authRoutes = require('./api/routes/user');
 
 mongoose.set('strictQuery', true);
 mongoose.connect(
@@ -28,6 +29,7 @@ mongoose.connect(
 
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('', authRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not found');
