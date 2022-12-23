@@ -1,6 +1,28 @@
 const express = require('express');
 const Product = require('../models/products');
 const mongoose = require('mongoose');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: "uploads",
+    filename: function(req, file, cb) {
+        console.log(file);
+        cb(null, new Date().getTime() + file.originalname)
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    switch (file.mimetype) {
+        case 'image/jpeg':
+        case 'image/png': 
+            cb(null, true);
+            break;
+        default:
+            cb(new Error('Invalid file extension'), false);
+    }
+}
+
+const upload = multer({storage: storage, limits: {fileSize: 1024 * 1024 * 10}, fileFilter: fileFilter});
 
 const router = express.Router();
 
@@ -8,6 +30,7 @@ const adjustProductInfo = (product) => ({
     name: product.name || null,
     price: product.price || null,
     _id: product._id || product._id,
+    productImage: product.productImage || null
     /*request: {
         type: 'GET',
         url: 'http://localhost:3000/products/' + product._id
@@ -16,7 +39,6 @@ const adjustProductInfo = (product) => ({
 
 router.get('/', (req, res, next) => {
     Product.find()
-        .select('name price _id')
         .exec()
         .then(products => {
             const response = {
@@ -30,11 +52,13 @@ router.get('/', (req, res, next) => {
         })
 });
 
-router.post('/', (req, res, next) => {
+router.post('/', upload.single('productImage'), (req, res, next) => {
+    console.log(req.file ? req.file : 'no file');
     new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        productImage: req.file.path
     })
     .save()
     .then(result => {

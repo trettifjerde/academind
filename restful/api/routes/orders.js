@@ -12,7 +12,9 @@ const adjustOrderResponse = (response) => ({
 
 router.get('/', (req, res, next) => {
     Order.find()
-    .select('_id product quantity').exec()
+    .select('_id product quantity')
+    .populate('product', 'name _id')
+    .exec()
     .then(orders => {
         res.status(200).json({
             message: 'Orders fetched',
