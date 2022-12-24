@@ -2,6 +2,7 @@ const express = require('express');
 const Product = require('../models/products');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const authCheck = require('../middleware/check-auth');
 
 const storage = multer.diskStorage({
     destination: "uploads",
@@ -52,7 +53,7 @@ router.get('/', (req, res, next) => {
         })
 });
 
-router.post('/', upload.single('productImage'), (req, res, next) => {
+router.post('/', authCheck, upload.single('productImage'), (req, res, next) => {
     console.log(req.file ? req.file : 'no file');
     new Product({
         _id: new mongoose.Types.ObjectId(),
@@ -90,7 +91,7 @@ router.get('/:productId', (req, res, next) => {
         });
 });
 
-router.patch('/:productId', (req, res, next) => {
+router.patch('/:productId', authCheck, (req, res, next) => {
     const updatedProduct = Object.entries(req.body).reduce((acc, [key, value]) => {
         if (key === 'name' || key === 'price')
             acc[key] = value;
@@ -102,7 +103,7 @@ router.patch('/:productId', (req, res, next) => {
         .catch(err => res.status(500).json({error: err}))
 });
 
-router.delete('/:productId', (req, res, next) => {
+router.delete('/:productId', authCheck, (req, res, next) => {
     Product.findOneAndRemove({_id: req.params.productId}).exec()
         .then(result => res.status(200).json(result))
         .catch(error => res.status(500).json({error: error}))
