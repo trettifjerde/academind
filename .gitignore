@@ -1,4 +1,4 @@
 node_modules/
 env-vars.js
 uploads/
-/typescript/*.js
+/typescript/**/*.js
