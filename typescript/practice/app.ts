@@ -1,30 +1,4 @@
-type ValidationCheckName = 'required' | 'positive' | ['maxNum', number] | ['maxLength', number];
-
-interface ValidationInfo {
-    [elName: string]: {
-        [fieldName: string]: Set<ValidationCheckName>
-    }
-}
-
-function NotEmpty(target: any, fieldName: string) {
-    app.addValidationCheck(target.constructor.name, fieldName, 'required');
-}
-
-function Positive(target: any, fieldName: string) {
-    app.addValidationCheck(target.constructor.name, fieldName, 'positive');
-}
-
-function MaxLength(n: number) {
-    return function(target: any, fieldName: string) {
-        app.addValidationCheck(target.constructor.name, fieldName, ['maxLength', n])
-    }
-}
-
-function MaxNumber(n: number) {
-    return function (target: any, fieldName: string) {
-        app.addValidationCheck(target.constructor.name, fieldName, ['maxNum', n]);
-    }
-}
+import { Validator } from './app/utils/validation';
 
 interface Draggable {
     dragStartHandler(event: DragEvent) : void;
@@ -38,7 +12,6 @@ interface DropTarget {
 }
 
 interface AppState {
-    validationInfo: ValidationInfo,
     projects: Project[]
 }
 
@@ -61,55 +34,11 @@ class App {
     private _finishedProjects?: ProjectList;
     private _projectForm?: ProjectInput;
 
-    get validationInfo() {
-        return this.state.validationInfo;
-    }
-
     private constructor() {
         this.state = {
-            validationInfo: {},
             projects: []
         };
         this.listeners = [];
-    }
-
-    addValidationCheck(elName: string, fieldName: string, checkName: ValidationCheckName) {
-        if (!(elName in this.state.validationInfo)) {
-            this.state.validationInfo[elName] = {};
-        }
-        if (!(fieldName in this.state.validationInfo[elName])) {
-            this.state.validationInfo[elName][fieldName] = new Set();
-        }
-        this.state.validationInfo[elName][fieldName].add(checkName);
-    }
-
-    validateObj(obj: any) {
-        let result = true;
-    
-        const vInfo = this.state.validationInfo[obj.constructor.name];
-        for (const fieldName in vInfo) {
-            for (const check of vInfo[fieldName]) {
-                switch(check) {
-                    case 'required':
-                        result = result && obj[fieldName].value.trim();
-                        break;
-                    case 'positive':
-                        result = result && +obj[fieldName].value > 0;
-                        break;
-                    default:
-                        switch(check[0]) {
-                            case 'maxNum':
-                                result = result && +obj[fieldName].value <= check[1];
-                                break;
-                            case 'maxLength': 
-                                result = result && obj[fieldName].value.trim().length <= check[1];
-                                break;
-                        }
-                }
-            }
-        }
-    
-        return result;
     }
 
     init() {
@@ -243,13 +172,13 @@ class ProjectList extends HTMLBasedClass<HTMLElement, HTMLDivElement> implements
 }
 
 class ProjectInput extends HTMLBasedClass<HTMLFormElement, HTMLDivElement> {
-    @NotEmpty
+    @Validator.NotEmpty
     title: HTMLInputElement;
-    @NotEmpty
-    @MaxLength(1000)
+    @Validator.NotEmpty
+    @Validator.MaxLength(1000)
     description: HTMLInputElement;
-    @Positive
-    @MaxNumber(12)
+    @Validator.Positive
+    @Validator.MaxNumber(12)
     people: HTMLInputElement;
 
     constructor() {
@@ -270,7 +199,7 @@ class ProjectInput extends HTMLBasedClass<HTMLFormElement, HTMLDivElement> {
     submitForm(event: SubmitEvent) {
         event.preventDefault();
 
-        if (! app.validateObj(this)) {
+        if (! Validator.getValidator().validate(this)) {
             alert('Invalid form data');
             return;
         }
