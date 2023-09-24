@@ -1,0 +1,342 @@
+@font-face {
+  font-family: 'SolidGames-Icons';
+  src:  url('../fonts/SolidGames-Icons.eot?cjij3i');
+  src:  url('../fonts/SolidGames-Icons.eot?cjij3i#iefix') format('embedded-opentype'),
+    url('../fonts/SolidGames-Icons.ttf?cjij3i') format('truetype'),
+    url('../fonts/SolidGames-Icons.woff?cjij3i') format('woff'),
+    url('../fonts/SolidGames-Icons.svg?cjij3i#SolidGames-Icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="sg-"], [class*=" sg-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'SolidGames-Icons' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sg-dice:before {
+  content: "\e966";
+}
+.sg-pause:before {
+  content: "\e901";
+}
+.sg-play:before {
+  content: "\e902";
+}
+.sg-star:before {
+  content: "\e903";
+}
+.sg-book:before {
+  content: "\e904";
+}
+.sg-trophy:before {
+  content: "\e905";
+}
+.sg-youtube:before {
+  content: "\e906";
+}
+.sg-wrench:before {
+  content: "\e907";
+}
+.sg-vk-brands:before {
+  content: "\e908";
+}
+.sg-user-shield:before {
+  content: "\e909";
+}
+.sg-users:before {
+  content: "\e90a";
+}
+.sg-user:before {
+  content: "\e90b";
+}
+.sg-underline:before {
+  content: "\e90c";
+}
+.sg-thumbs-up:before {
+  content: "\e90d";
+}
+.sg-thumbs-down:before {
+  content: "\e90e";
+}
+.sg-terminal:before {
+  content: "\e90f";
+}
+.sg-telegram-brands:before {
+  content: "\e910";
+}
+.sg-steam-brands:before {
+  content: "\e911";
+}
+.sg-sign-out:before {
+  content: "\e912";
+}
+.sg-sign-in:before {
+  content: "\e913";
+}
+.sg-server:before {
+  content: "\e914";
+}
+.sg-search:before {
+  content: "\e915";
+}
+.sg-quotes-right:before {
+  content: "\e916";
+}
+.sg-plus:before {
+  content: "\e917";
+}
+.sg-pencil:before {
+  content: "\e918";
+}
+.sg-paragraph-right:before {
+  content: "\e919";
+}
+.sg-paragraph-left:before {
+  content: "\e91a";
+}
+.sg-paragraph-center:before {
+  content: "\e91b";
+}
+.sg-minus:before {
+  content: "\e91c";
+}
+.sg-menu:before {
+  content: "\e91d";
+}
+.sg-loop:before {
+  content: "\e91e";
+}
+.sg-warning:before {
+  content: "\e91f";
+}
+.sg-link:before {
+  content: "\e920";
+}
+.sg-italic:before {
+  content: "\e921";
+}
+.sg-info:before {
+  content: "\e922";
+}
+.sg-image:before {
+  content: "\e923";
+}
+.sg-home:before {
+  content: "\e924";
+}
+.sg-hammer:before {
+  content: "\e925";
+}
+.sg-grin:before {
+  content: "\e926";
+}
+.sg-forward:before {
+  content: "\e927";
+}
+.sg-format-color:before {
+  content: "\e928";
+}
+.sg-font-size:before {
+  content: "\e929";
+}
+.sg-film:before {
+  content: "\e92a";
+}
+.sg-feather:before {
+  content: "\e92b";
+}
+.sg-discord-brands:before {
+  content: "\e92c";
+}
+.sg-credit-card:before {
+  content: "\e92d";
+}
+.sg-settings:before {
+  content: "\e92e";
+}
+.sg-cloud:before {
+  content: "\e92f";
+}
+.sg-close:before {
+  content: "\e930";
+}
+.sg-clipboard:before {
+  content: "\e931";
+}
+.sg-chevron-right:before {
+  content: "\e932";
+}
+.sg-chevron-up:before {
+  content: "\e900";
+}
+.sg-chevron-left:before {
+  content: "\e933";
+}
+.sg-caret-right:before {
+  content: "\e934";
+}
+.sg-car:before {
+  content: "\e935";
+}
+.sg-camera:before {
+  content: "\e936";
+}
+.sg-calendar:before {
+  content: "\e937";
+}
+.sg-bubbles:before {
+  content: "\e938";
+}
+.sg-user-plus:before {
+  content: "\e939";
+}
+.sg-bubble2:before {
+  content: "\e93a";
+}
+.sg-bubble:before {
+  content: "\e93b";
+}
+.sg-bold:before {
+  content: "\e93c";
+}
+.sg-bin:before {
+  content: "\e93d";
+}
+.sg-bell:before {
+  content: "\e93e";
+}
+.sg-attachment:before {
+  content: "\e93f";
+}
+.sg-caret-down:before {
+  content: "\e940";
+}
+.sg-pushpin:before {
+  content: "\e941";
+}
+.sg-caret-left:before {
+  content: "\e942";
+}
+.sg-caret-up:before {
+  content: "\e943";
+}
+.sg-user-minus:before {
+  content: "\e944";
+}
+.sg-strikethrough:before {
+  content: "\e945";
+}
+.sg-list-numbered:before {
+  content: "\e946";
+}
+.sg-list:before {
+  content: "\e947";
+}
+.sg-eye:before {
+  content: "\e948";
+}
+.sg-eye-blocked:before {
+  content: "\e967";
+}
+.sg-download:before {
+  content: "\e949";
+}
+.sg-copy:before {
+  content: "\e94a";
+}
+.sg-check:before {
+  content: "\e94b";
+}
+.sg-asterisk:before {
+  content: "\e94c";
+}
+.sg-attack-heli:before {
+  content: "\e94d";
+}
+.sg-tank:before {
+  content: "\e94e";
+}
+.sg-transport-heli:before {
+  content: "\e94f";
+}
+.sg-sniper:before {
+  content: "\e950";
+}
+.sg-sapper:before {
+  content: "\e951";
+}
+.sg-atgm:before {
+  content: "\e952";
+}
+.sg-medic:before {
+  content: "\e953";
+}
+.sg-apc:before {
+  content: "\e954";
+}
+.sg-commander:before {
+  content: "\e955";
+}
+.sg-arty:before {
+  content: "\e956";
+}
+.sg-spg:before {
+  content: "\e957";
+}
+.sg-jet:before {
+  content: "\e958";
+}
+.sg-anti-aircraft:before {
+  content: "\e959";
+}
+.sg-subforum:before {
+  content: "\e95a";
+}
+.sg-topic:before {
+  content: "\e95b";
+}
+.sg-circle:before {
+  content: "\e95c";
+}
+.sg-lock:before {
+  content: "\e95d";
+}
+.sg-bullhorn:before {
+  content: "\e95e";
+}
+.sg-caret:before {
+  content: "\e95f";
+}
+.sg-resilio-brands:before {
+  content: "\e960";
+}
+.sg-teamspeak-brands:before {
+  content: "\e961";
+}
+.sg-plugin:before {
+  content: "\e962";
+}
+.sg-emblem-hq:before {
+  content: "\e963";
+}
+.sg-emblem-leader:before {
+  content: "\e964";
+}
+.sg-emblem-deputy:before {
+  content: "\e965";
+}
+.sg-redo:before {
+  content: "\e968";
+}

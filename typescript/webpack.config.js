@@ -2,12 +2,11 @@ const path = require('path');
 
 module.exports = {
     mode: 'development',
-    entry: './practice/app.ts',
+    entry: './replays/replays.js',
     output: {
-        filename: 'app.js',
-        path: path.resolve(__dirname, 'practice', 'dist')
+        filename: 'replays.min.js',
+        path: path.resolve(__dirname, 'replays', 'dist')
     },
-    devtool: 'inline-source-map',
     module: {
         rules: [
             {
@@ -18,6 +17,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.js'],
+        modules: ['node_modules', path.resolve(__dirname, 'replays')]
     }
 }

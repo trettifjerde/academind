@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Реплеи SolidGames - отыгрыш %%MISSION_NAME%%">
+    <meta name="keywords" content="SG, SolidGames, Arma 3">
+    <meta name="author" content="G-Virus">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="replay-style.css"/>
+    <link rel="stylesheet" href="sgicons.css"/>
+    <link rel="stylesheet" href="leaflet.min.css"/>
+    <input id="filename" type="hidden" name="filename" value="2023_01_29__22_33_21__1_ocap"/>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+                <span onclick="goBack();" class="button gray" title="Назад в меню" style="left: 0">
+                    <i class="sg-chevron-left"></i>
+                </span>
+                <span id="showPlayers" class="button primary" title="Показать всех игроков">
+                    <i class="sg-users"></i>
+                </span>
+                <div class="header__title">                
+                    <span id="serverId" class="desktop header__mission">Сервер %%SERVER%%</span>
+                    <span id="missionDate" class="header__mission">%%DATE%%</span>
+                    <span id="missionName" class="desktop header__mission__name">%%MISSION_NAME%%</span>
+                    <span id="worldName" class="desktop header__mission">%%WORLD%%</span>
+                    <span onclick="copyLink()" class="desktop button gray" title="Скопировать ссылку на реплей">
+                        <i class="sg-link"></i>
+                    </span>
+                    <span onclick="toggleTheme()" class="desktop button gray" title="Переключить тему">
+                        <i class="sg-cloud"></i>
+                    </span>
+                </div>
+                <span id="showStats" class="button primary" title="Показать статистику по отрядам">
+                    <i class="sg-trophy"></i>
+                </span>
+                <span id="showLog" class="button gray" title="Показать журнал боя">
+                    <i class="sg-book"></i>
+                </span>
+            </div>
+        </header>
+        <main role="main">
+            <section id="map" class="leaflet-container leaflet-grab leaflet-touch-drag">
+                <div class="leaflet-map-pane"></div>
+            </section>
+        </main>
+        <section id="playersList" class="stats-pane left">
+            <div class="left__wrap">
+                <div class="lobby">
+                    <div class="lobby-sides">
+                        <span id="blufor" class="lobby-sides-item lobby-side-blufor"></span>
+                        <span id="opfor" class="lobby-sides-item lobby-side-opfor"></span>
+                        <span id="guer" class="lobby-sides-item lobby-side-guer"></span>
+                        <span id="civ" class="lobby-sides-item lobby-side-civ"></span>
+                    </div>
+                </div>
+                <div class="lobby__units-wrap">
+                    <div id="lobby__units" class="lobby__units">
+                        <div id="lobby-blufor" class="lobby__units-item"></div>
+                        <div id="lobby-opfor" class="lobby__units-item none"></div>
+                        <div id="lobby-guer" class="lobby__units-item none"></div>
+                        <div id="lobby-civ" class="lobby__units-item none"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="missionLog" class="stats-pane right">
+            <div class="right__wrap">
+                <div id="log" class="log">
+                </div>
+            </div>
+        </section>
+
+        <section id="statsModal" class="stats-pane dialog">
+            <div class="dialog__header">
+                <div class="dialog__header__title">Статистика реплея</div>
+                <div id="dialog__close" class="dialog__close button gray">
+                    <i class="sg-close" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="dialog__content">
+                <div id="squad-stats-tables-container" class="statistic-sides"></div>
+                <div id="fraggers-table">
+                    <div class="fragger-info event-details">
+                        <div class="fragger-name">Имя</div>
+                        <div class="kill">Свои</div>
+                        <div class="kill">Враг</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div id="footer__inner" class="footer__inner">
+                <div class="player-btns">
+                    <div id="backBtn" class="button primary footer__button">
+                        <i class="sg-caret-left"></i>
+                    </div>
+                    <div id="playBtn" class="button primary footer__button">
+                        <i class="sg-pause"></i>
+                    </div>
+                    <div id="forwardBtn" class="button primary footer__button">
+                        <i class="sg-caret-right"></i>
+                    </div>
+                </div>
+                <div class="slider"></div>
+                <div class="timer">
+                    <span id="missionCurTime" class="timer-current"></span>
+                    <span class="desktop">&nbsp;/&nbsp;</span>
+                    <span id="missionEndTime" class="timer-full desktop"></span>
+                </div>
+                <div class="footer__speed">
+                    <div class="speeder mod_unselectable" title="Скорость воспроизведения">
+                        <div class="speeder__button button primary" data-speed="0.5">0.5</div>
+                        <div class="speeder__button button primary speeder__button-active" data-speed="1">1</div>
+                        <div class="speeder__button button primary" data-speed="2">2</div>
+                        <div class="speeder__button button primary" data-speed="4">4</div>
+                        <div class="speeder__button button primary" data-speed="8">8</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+    <svg>
+        <defs>
+            <pattern id="horizontalcolorgrey" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #7f7f7f"></path></pattern>
+            <pattern id="horizontalcolorred" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #e50000"></path></pattern>
+            <pattern id="horizontalcolorbrown" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #7f4000"></path></pattern>
+            <pattern id="horizontalcolororange" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #d86600"></path></pattern>
+            <pattern id="horizontalcoloryellow" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #d8d800"></path></pattern>
+            <pattern id="horizontalcolorkhaki" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #6698fe"></path></pattern>
+            <pattern id="horizontalcolorgreen" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #00cb00"></path></pattern>
+            <pattern id="horizontalcolorblue" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #0000fe"></path></pattern>
+            <pattern id="horizontalcolorpink" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #fe4c66"></path></pattern>
+            <pattern id="horizontalcolorwhite" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #fefefe"></path></pattern>
+            <pattern id="horizontalcolorblufor" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #004c98"></path></pattern>
+            <pattern id="horizontalcolorwest" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #004c98"></path></pattern>
+            <pattern id="horizontalcoloreast" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #7f0000"></path></pattern>
+            <pattern id="horizontalcoloropfor" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #7f0000"></path></pattern>
+            <pattern id="horizontalcolorguer" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #007f00"></path></pattern>
+            <pattern id="horizontalcolorindependent" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #007f00"></path></pattern>
+            <pattern id="horizontalcolorciv" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #66007f"></path></pattern>
+            <pattern id="horizontalcolorcivilian" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #66007f"></path></pattern>
+            <pattern id="horizontalcolorunknown" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #b19900"></path></pattern>
+            <pattern id="horizontaldefault" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #000000"></path></pattern>
+            <pattern id="horizontalcolorblack" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 0 5 L 10 5" style="stroke: #000000"></path></pattern>
+            <pattern id="verticalcolorgrey" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #7f7f7f"></path></pattern>
+            <pattern id="verticalcolorred" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #e50000"></path></pattern>
+            <pattern id="verticalcolorbrown" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #7f4000"></path></pattern>
+            <pattern id="verticalcolororange" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #d86600"></path></pattern>
+            <pattern id="verticalcoloryellow" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #d8d800"></path></pattern>
+            <pattern id="verticalcolorkhaki" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #6698fe"></path></pattern>
+            <pattern id="verticalcolorgreen" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #00cb00"></path></pattern>
+            <pattern id="verticalcolorblue" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #0000fe"></path></pattern>
+            <pattern id="verticalcolorpink" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #fe4c66"></path></pattern>
+            <pattern id="verticalcolorwhite" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #fefefe"></path></pattern>
+            <pattern id="verticalcolorblufor" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="verticalcolorwest" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="verticalcoloreast" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="verticalcoloropfor" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="verticalcolorguer" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="verticalcolorindependent" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="verticalcolorciv" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="verticalcolorcivilian" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="verticalcolorunknown" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #b19900"></path></pattern>
+            <pattern id="verticaldefault" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #000000"></path></pattern>
+            <pattern id="verticalcolorblack" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0" style="stroke: #000000"></path></pattern>
+            <pattern id="gridcolorgrey" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #7f7f7f"></path></pattern>
+            <pattern id="gridcolorred" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #e50000"></path></pattern>
+            <pattern id="gridcolorbrown" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #7f4000"></path></pattern>
+            <pattern id="gridcolororange" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #d86600"></path></pattern>
+            <pattern id="gridcoloryellow" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #d8d800"></path></pattern>
+            <pattern id="gridcolorkhaki" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #6698fe"></path></pattern>
+            <pattern id="gridcolorgreen" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #00cb00"></path></pattern>
+            <pattern id="gridcolorblue" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #0000fe"></path></pattern>
+            <pattern id="gridcolorpink" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #fe4c66"></path></pattern>
+            <pattern id="gridcolorwhite" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #fefefe"></path></pattern>
+            <pattern id="gridcolorblufor" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #004c98"></path></pattern>
+            <pattern id="gridcolorwest" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #004c98"></path></pattern>
+            <pattern id="gridcoloreast" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #7f0000"></path></pattern>
+            <pattern id="gridcoloropfor" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #7f0000"></path></pattern>
+            <pattern id="gridcolorguer" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #007f00"></path></pattern>
+            <pattern id="gridcolorindependent" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #007f00"></path></pattern>
+            <pattern id="gridcolorciv" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #66007f"></path></pattern>
+            <pattern id="gridcolorcivilian" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #66007f"></path></pattern>
+            <pattern id="gridcolorunknown" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #b19900"></path></pattern>
+            <pattern id="griddefault" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #000000"></path></pattern>
+            <pattern id="gridcolorblack" patternUnits="userSpaceOnUse" width="5" height="5" viewBox="0 0 10 10"><path d="M 5 10 L 5 0 M 0 5 L 10 5" style="stroke: #000000"></path></pattern>
+            <pattern id="fdiagonalcolorgrey" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #7f7f7f"></path></pattern>
+            <pattern id="fdiagonalcolorred" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #e50000"></path></pattern>
+            <pattern id="fdiagonalcolorbrown" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #7f4000"></path></pattern>
+            <pattern id="fdiagonalcolororange" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #d86600"></path></pattern>
+            <pattern id="fdiagonalcoloryellow" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #d8d800"></path></pattern>
+            <pattern id="fdiagonalcolorkhaki" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #6698fe"></path></pattern>
+            <pattern id="fdiagonalcolorgreen" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #00cb00"></path></pattern>
+            <pattern id="fdiagonalcolorblue" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #0000fe"></path></pattern>
+            <pattern id="fdiagonalcolorpink" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #fe4c66"></path></pattern>
+            <pattern id="fdiagonalcolorwhite" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #fefefe"></path></pattern>
+            <pattern id="fdiagonalcolorblufor" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="fdiagonalcolorwest" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="fdiagonalcoloreast" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="fdiagonalcoloropfor" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="fdiagonalcolorguer" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="fdiagonalcolorindependent" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="fdiagonalcolorciv" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="fdiagonalcolorcivilian" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="fdiagonalcolorunknown" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #b19900"></path></pattern>
+            <pattern id="fdiagonaldefault" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #000000"></path></pattern>
+            <pattern id="fdiagonalcolorblack" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 0 14 L 14 0" style="stroke: #000000"></path></pattern>
+            <pattern id="bdiagonalcolorgrey" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #7f7f7f"></path></pattern>
+            <pattern id="bdiagonalcolorred" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #e50000"></path></pattern>
+            <pattern id="bdiagonalcolorbrown" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #7f4000"></path></pattern>
+            <pattern id="bdiagonalcolororange" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #d86600"></path></pattern>
+            <pattern id="bdiagonalcoloryellow" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #d8d800"></path></pattern>
+            <pattern id="bdiagonalcolorkhaki" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #6698fe"></path></pattern>
+            <pattern id="bdiagonalcolorgreen" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #00cb00"></path></pattern>
+            <pattern id="bdiagonalcolorblue" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #0000fe"></path></pattern>
+            <pattern id="bdiagonalcolorpink" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #fe4c66"></path></pattern>
+            <pattern id="bdiagonalcolorwhite" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #fefefe"></path></pattern>
+            <pattern id="bdiagonalcolorblufor" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="bdiagonalcolorwest" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="bdiagonalcoloreast" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="bdiagonalcoloropfor" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="bdiagonalcolorguer" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="bdiagonalcolorindependent" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="bdiagonalcolorciv" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="bdiagonalcolorcivilian" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="bdiagonalcolorunknown" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #b19900"></path></pattern>
+            <pattern id="bdiagonaldefault" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #000000"></path></pattern>
+            <pattern id="bdiagonalcolorblack" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0" style="stroke: #000000"></path></pattern>
+            <pattern id="diaggridcolorgrey" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #7f7f7f"></path></pattern>
+            <pattern id="diaggridcolorred" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #e50000"></path></pattern>
+            <pattern id="diaggridcolorbrown" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #7f4000"></path></pattern>
+            <pattern id="diaggridcolororange" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #d86600"></path></pattern>
+            <pattern id="diaggridcoloryellow" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #d8d800"></path></pattern>
+            <pattern id="diaggridcolorkhaki" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #6698fe"></path></pattern>
+            <pattern id="diaggridcolorgreen" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #00cb00"></path></pattern>
+            <pattern id="diaggridcolorblue" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #0000fe"></path></pattern>
+            <pattern id="diaggridcolorpink" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #fe4c66"></path></pattern>
+            <pattern id="diaggridcolorwhite" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #fefefe"></path></pattern>
+            <pattern id="diaggridcolorblufor" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="diaggridcolorwest" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #004c98"></path></pattern>
+            <pattern id="diaggridcoloreast" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="diaggridcoloropfor" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #7f0000"></path></pattern>
+            <pattern id="diaggridcolorguer" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="diaggridcolorindependent" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #007f00"></path></pattern>
+            <pattern id="diaggridcolorciv" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="diaggridcolorcivilian" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #66007f"></path></pattern>
+            <pattern id="diaggridcolorunknown" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #b19900"></path></pattern>
+            <pattern id="diaggriddefault" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #000000"></path></pattern>
+            <pattern id="diaggridcolorblack" patternUnits="userSpaceOnUse" width="7" height="7" viewBox="0 0 14 14"><path d="M 14 14 L 0 0 M 0 14 L 14 0" style="stroke: #000000"></path></pattern>
+            <pattern id="crosscolorgrey" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #7f7f7f"></path></pattern>
+            <pattern id="crosscolorred" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #e50000"></path></pattern>
+            <pattern id="crosscolorbrown" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #7f4000"></path></pattern>
+            <pattern id="crosscolororange" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #d86600"></path></pattern>
+            <pattern id="crosscoloryellow" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #d8d800"></path></pattern>
+            <pattern id="crosscolorkhaki" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #6698fe"></path></pattern>
+            <pattern id="crosscolorgreen" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #00cb00"></path></pattern>
+            <pattern id="crosscolorblue" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #0000fe"></path></pattern>
+            <pattern id="crosscolorpink" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #fe4c66"></path></pattern>
+            <pattern id="crosscolorwhite" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #fefefe"></path></pattern>
+            <pattern id="crosscolorblufor" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #004c98"></path></pattern>
+            <pattern id="crosscolorwest" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #004c98"></path></pattern>
+            <pattern id="crosscoloreast" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #7f0000"></path></pattern>
+            <pattern id="crosscoloropfor" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #7f0000"></path></pattern>
+            <pattern id="crosscolorguer" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #007f00"></path></pattern>
+            <pattern id="crosscolorindependent" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #007f00"></path></pattern>
+            <pattern id="crosscolorciv" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #66007f"></path></pattern>
+            <pattern id="crosscolorcivilian" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #66007f"></path></pattern>
+            <pattern id="crosscolorunknown" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #b19900"></path></pattern>
+            <pattern id="crossdefault" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #000000"></path></pattern>
+            <pattern id="crosscolorblack" patternUnits="userSpaceOnUse" width="20" height="20" viewBox="0 0 20 20"><path d="M 10 17 L 10 3 M 3 10 L 17 10" style="stroke: #000000"></path></pattern>
+        </defs>
+    </svg>
+
+    <script type="text/javascript">
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+        }
+    </script>
+    <script src="jquery.js"></script>
+    <script src="jquery-ui.js"></script>
+    <script src="leaflet.js"></script>
+    <script src="leaflet.rotatedMarker.js"></script>
+    <script src="dist/replays.min.js"></script>
+</body>
+</html>

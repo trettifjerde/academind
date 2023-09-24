@@ -2,10 +2,10 @@ const path = require('path');
 
 module.exports = {
     mode: 'production',
-    entry: './practice/app.ts',
+    entry: './replays/replays.js',
     output: {
-        filename: 'app.js',
-        path: path.resolve(__dirname, 'practice', 'dist')
+        filename: 'replays.min.js',
+        path: path.resolve(__dirname, 'replays', 'dist')
     },
     module: {
         rules: [

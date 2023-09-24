@@ -1,0 +1,851 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/*@font-face {
+	font-family: 'Segoe UI';
+	src: url('/fonts/SegoeUI.eot');
+	src: local('Segoe UI'), local('SegoeUI'),
+		url('/fonts/SegoeUI.eot?#iefix') format('embedded-opentype'),
+		url('/fonts/SegoeUI.woff') format('woff'),
+		url('/fonts/SegoeUI.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Segoe UI';
+	src: url('/fonts/SegoeUI-SemiBold.eot');
+	src: local('Segoe UI Semibold'), local('SegoeUI-SemiBold'),
+		url('/fonts/SegoeUI-SemiBold.eot?#iefix') format('embedded-opentype'),
+		url('/fonts/SegoeUI-SemiBold.woff') format('woff'),
+		url('/fonts/SegoeUI-SemiBold.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
+}
+
+@font-face {
+    font-family: 'SolidGames-Icons';
+    src:  url('/fonts/SolidGames-Icons.eot?dywynf');
+    src:  url('/fonts/SolidGames-Icons.eot?dywynf#iefix') format('embedded-opentype'),
+      url('/fonts/SolidGames-Icons.ttf?dywynf') format('truetype'),
+      url('/fonts/SolidGames-Icons.woff?dywynf') format('woff'),
+      url('/fonts/SolidGames-Icons.svg?dywynf#SolidGames-Icons') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+  } 
+  
+  [class^="sg-"], [class*=" sg-"] {
+    font-family: 'SolidGames-Icons' !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+  
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}*/
+
+::-webkit-scrollbar {
+    width: 13px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(65, 111, 77, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4E8A54;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+    margin-bottom: 3rem;
+}
+
+.footer {
+    background-color: #181818;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    -webkit-box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    -moz-box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+}
+
+#map {
+    position: absolute;
+    z-index: 100;
+    right: 0;
+    left: 0;
+    top: 3rem;
+    bottom: 3rem;
+}
+
+/* Header */
+
+.header {
+    background-color: #181818;
+    display: flex;
+    height: 3rem;
+}
+
+.header__title {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+}
+
+.button {
+    min-width: 3rem;
+    width: 3rem;
+    height: 3rem;
+    line-height: 3rem;
+    color: #fff !important;
+    text-align: center;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.primary {
+    background: #4E8A54;
+}
+
+.gray {
+    background: transparent;
+}
+
+@media (pointer:fine)
+{
+    .primary:hover {
+        background: #396939;
+    }
+    .gray:hover {
+        background: #393939;
+    }
+
+    .speeder__button-active:hover {
+        background: #393939 !important;
+    }
+}
+
+.header__mission {
+    font-size: 18px;
+    color: #808080;;
+}
+
+.header__mission__name {
+    font-size: 18px;
+    color: #fff;
+}
+
+/* Sidebars */
+
+/* Players List */
+
+.left {
+    position: absolute;
+    top: 3rem;
+    background-color: #494949;
+    left: -300px;
+    width: 300px;
+    bottom: 3rem;
+    z-index: 199;
+    color: #fff;
+    -webkit-box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    -moz-box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    transition: all 0.2s ease-in-out;
+}
+
+.left__wrap {
+    padding: 10px;
+}
+
+.left_active {
+    left: 0 !important;
+}
+
+.lobby-sides {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.lobby-sides-item {
+    width: 100%;
+    height: 30px;
+    padding: 2px 0;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    border: 1px transparent solid;
+}
+
+.lobby__units-wrap {
+    position: absolute;
+    top: 55px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    overflow-y: auto;
+}
+
+.lobby__units {
+    color: #eaeaea;
+    line-height: 22px;
+}
+
+.lobby__units-group-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #999;
+}
+
+.lobby__units-row {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    cursor: pointer;
+}
+
+.lobby__units-row-name {}
+
+.lobby__units-row-description {
+    font-size: 0.8rem;
+    color: #9c9c9c;
+    margin-left: 7px;
+}
+
+/* Mission log */
+.right {
+    position: fixed;
+    top: 3rem;
+    background-color: #494949;
+    right: -300px;
+    width: 300px;
+    bottom: 3rem;
+    z-index: 199;
+    color: #3f4650;
+    -webkit-box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    -moz-box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+    transition: all 0.2s ease-in-out;
+}
+
+.right__wrap {
+    padding: 10px;
+}
+
+.right_active {
+    right: 0 !important;
+}
+
+.log {
+    font-size: 14px;
+    line-height: 16px;
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    overflow-y: scroll;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y proximity;
+    color: #999;
+}
+
+.log > p:last-child {
+    scroll-snap-align: end;
+}
+
+.log .west, .log .east, .log .guer, .log .civ, .log .empty {
+    font-weight: 600;
+}
+
+.event-details { font-size: 11px;}
+
+.west {
+    color: #0141c0;
+}
+
+.east {
+    color: #e42517;
+}
+
+.guer {
+    color: #0a8b0f;
+}
+
+.civ {
+    color: #9c36e1;
+}
+
+.empty { color: #ff9800; }
+
+/* Timeline */
+.ui-widget-header {
+    border: 1px solid #3f4650;
+    background: #393939;
+    color: #393939;
+    font-weight: bold;
+}
+
+.ui-corner-all {
+    border-radius: 0px;
+}
+
+.ui-slider {
+    position: relative;
+    text-align: left;
+}
+
+.ui-slider-horizontal {
+    height: 10px;
+}
+
+.ui-slider-horizontal .ui-slider-range {
+    top: 0;
+    height: 100%;
+}
+
+.ui-slider-horizontal .ui-slider-range-min {
+    left: 0;
+}
+
+.ui-widget.ui-widget-content {
+    border: 1px solid #c5c5c5;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button {
+    border: 1px solid #c5c5c5;
+    background: #f6f6f6;
+    font-weight: normal;
+    color: #454545;
+}
+
+.ui-slider .ui-slider-handle:focus {
+    outline: none;
+}
+
+.ui-slider-horizontal .ui-slider-handle {
+    top: -.18em;
+    margin-left: -.6em;
+}
+
+.ui-slider .ui-slider-handle {
+    position: absolute;
+    z-index: 2;
+    width: 1.2em;
+    height: 1.2em;
+    cursor: default;
+    -ms-touch-action: none;
+    touch-action: none;
+    display: none;
+}
+
+.ui-widget-content {
+    background-image: none !important;
+    background: #ECF0F1 !important;
+    border: 0px solid #3FA635 !important;
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    -webkit-border-radius: 0px !important;
+    color: #fff;
+}
+
+.footer__speed {
+    font-size: 0.85rem;
+    display: block;
+    text-align: center;
+}
+
+.speeder__button-active {
+    background: #393939 !important;
+}
+
+.footer__button {
+    display: block;
+    color: #fff;
+    cursor: pointer;
+    width: 3rem;
+    height: 3rem;
+    line-height: 3rem;
+    text-align: center;
+}
+
+.speeder__button {
+    cursor: pointer;
+    height: 3rem;
+    line-height: 3rem;
+    width: 3rem;
+}
+
+.footer__inner {
+    width: calc(100vw - 600px);
+    display: flex;
+    height: 3rem;
+    background-color: #4E8A54;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.slider {
+    width: 100%;
+}
+
+.timer {
+    font-size: 0.85rem;
+    padding: 0 1rem;
+    white-space: nowrap;
+}
+
+.speeder, .player-btns {
+    height: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    border-radius: 0;
+}
+
+.footer__timer {
+    font-size: 0.85rem;
+    position: absolute;
+}
+
+/* Leaflet popups */
+.leaflet-popup-content-wrapper {
+    border-radius: 0px;
+    line-height: unset;
+    box-shadow: 0 3px 12px 3px rgba(0, 0, 0, 0.12);
+}
+
+.unit-title {
+    font-size: 14px;
+    text-shadow: 0 0 2px white;
+    padding-left: 1px;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.unit {
+    font-weight: 700;
+}
+
+.unit-dead {
+    opacity: 0.4;
+}
+
+.unit-icon {
+    background: no-repeat center;
+    background-size: 17px;
+    float: left;
+    height: 20px;
+    width: 20px;
+}
+
+.west .unit-icon-man { background-image: url(/images/markers/man/man-west.svg);}
+.west .unit-icon-apc { background-image: url(/images/markers/apc/apc-west.svg);}
+.west .unit-icon-car { background-image: url(/images/markers/car/car-west.svg);}
+.west .unit-icon-heli { background-image: url(/images/markers/heli/heli-west.svg);}
+.west .unit-icon-tank { background-image: url(/images/markers/tank/tank-west.svg);}
+.west .unit-icon-plane { background-image: url(/images/markers/plane/plane-west.svg);}
+.west .unit-icon-sea { background-image: url(/images/markers/sea/sea-west.svg);}
+.west .unit-icon-truck { background-image: url(/images/markers/truck/truck-west.svg); }
+.west .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-west.svg); }
+
+.east .unit-icon-man { background-image: url(/images/markers/man/man-east.svg);}
+.east .unit-icon-apc { background-image: url(/images/markers/apc/apc-east.svg);}
+.east .unit-icon-car { background-image: url(/images/markers/car/car-east.svg);}
+.east .unit-icon-heli { background-image: url(/images/markers/heli/heli-east.svg);}
+.east .unit-icon-tank { background-image: url(/images/markers/tank/tank-east.svg);}
+.east .unit-icon-plane { background-image: url(/images/markers/plane/plane-east.svg);}
+.east .unit-icon-sea { background-image: url(/images/markers/sea/sea-east.svg);}
+.east .unit-icon-truck { background-image: url(/images/markers/truck/truck-east.svg);}
+.east .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-east.svg); }
+
+.guer .unit-icon-man { background-image: url(/images/markers/man/man-guer.svg);}
+.guer .unit-icon-apc { background-image: url(/images/markers/apc/apc-guer.svg);}
+.guer .unit-icon-car { background-image: url(/images/markers/car/car-guer.svg);}
+.guer .unit-icon-heli { background-image: url(/images/markers/heli/heli-guer.svg);}
+.guer .unit-icon-tank { background-image: url(/images/markers/tank/tank-guer.svg);}
+.guer .unit-icon-plane { background-image: url(/images/markers/plane/plane-guer.svg);}
+.guer .unit-icon-sea { background-image: url(/images/markers/sea/sea-guer.svg);}
+.guer .unit-icon-truck { background-image: url(/images/markers/truck/truck-guer.svg);}
+.guer .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-guer.svg); }
+
+.civ .unit-icon-man { background-image: url(/images/markers/man/man-civ.svg);}
+.civ .unit-icon-apc { background-image: url(/images/markers/apc/apc-civ.svg);}
+.civ .unit-icon-car { background-image: url(/images/markers/car/car-civ.svg);}
+.civ .unit-icon-heli { background-image: url(/images/markers/heli/heli-civ.svg);}
+.civ .unit-icon-tank { background-image: url(/images/markers/tank/tank-civ.svg);}
+.civ .unit-icon-plane { background-image: url(/images/markers/plane/plane-civ.svg);}
+.civ .unit-icon-sea { background-image: url(/images/markers/sea/sea-civ.svg);}
+.civ .unit-icon-truck { background-image: url(/images/markers/truck/truck-civ.svg);}
+.civ .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-civ.svg); }
+
+.empty .unit-icon-man { background-image: url(/images/markers/man/man-empty.svg);}
+.empty .unit-icon-apc { background-image: url(/images/markers/apc/apc-empty.svg);}
+.empty .unit-icon-car { background-image: url(/images/markers/car/car-empty.svg);}
+.empty .unit-icon-heli { background-image: url(/images/markers/heli/heli-empty.svg);}
+.empty .unit-icon-tank { background-image: url(/images/markers/tank/tank-empty.svg);}
+.empty .unit-icon-plane { background-image: url(/images/markers/plane/plane-empty.svg);}
+.empty .unit-icon-sea { background-image: url(/images/markers/sea/sea-empty.svg);}
+.empty .unit-icon-truck { background-image: url(/images/markers/truck/truck-empty.svg);}
+.empty .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-empty.svg); }
+
+.marker {
+    background: no-repeat center;
+    background-size: 17px;
+    float: left;
+    height: 15px;
+    width: 15px;
+}
+
+.marker-icon-loc_bunker {
+    background-image: url(/images/markers/map-control/bunker.svg);
+}
+
+.marker-icon-mine_exp-west {
+    background-image: url(/images/mine_exp-west.png);
+}
+
+.marker-icon-mine_exp-east {
+    background-image: url(/images/mine_exp-east.png);
+}
+
+.marker-icon-mine_exp-guer {
+    background-image: url(/images/mine_exp-guer.png);
+}
+
+.marker-icon-mil_dot {
+    border-radius: 50%;
+    -moz-border-radius: 3rem;
+    -webkit-border-radius: 3rem;
+}
+
+/* Stats */
+.dialog {
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    width: 700px;
+    height: 70vh;
+    top: 15vh;
+    left: calc((100vw - 700px) / 2);
+    z-index: 1001;
+}
+
+.dialog__active {
+    display: flex;
+}
+
+.dialog__header {
+    display: flex;
+    justify-content: space-between;
+    height: 3rem;
+    background: #494949;
+    line-height: 3rem;
+}
+
+.dialog__header__title {
+    padding-left: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.dialog__content {
+    background: #181818ee;
+    height: 100%;
+    padding: 10px;
+    overflow-y: auto;
+    line-height: 19px;
+    color: #999;
+}
+
+.statistic-sides {
+    display: flex;
+    width: 100%;
+    gap: 2rem;
+}
+
+.statistic-table {
+    background: #2d2d2d;
+    width: 50%;
+    padding: 0.5rem;
+}
+
+.statistic-table .fragger-info {
+    padding: 0.1rem;
+}
+
+.statistic-table a {
+    color: inherit;
+    text-decoration: none;
+    transition: opacity .3s;
+}
+
+.statistic-table a:hover { opacity: 0.7}
+
+.fraggers-row {
+    transition: background-color .3s;
+}
+
+.fragger-info {
+    display: flex;
+    align-items: center;
+}
+
+#fraggers-table {
+    margin-top: 0.5rem;
+}
+
+#fraggers-table .fragger-info {
+    padding: 0.3rem;
+}
+
+.fragger-name {
+    width: 100%;
+}
+
+.fragger-info .kill {
+    min-width: 3rem;
+    text-align: center;
+    color: #e9e9e9;
+}
+
+.event-details .kill {
+    color: #999;
+}
+
+.fragger-desc, .fragger-details {
+    font-size: 0.8rem;
+}
+
+.fragger-desc {
+    margin: 0 0.3rem;
+    color: #999;
+}
+
+.fragger-details {
+    display: grid;
+    grid-template-columns: 1fr 0.5fr 1fr 0.5fr;
+    grid-template-rows: auto;
+    gap: 0.3rem;
+    color: #828282;
+    margin-inline: 1rem;
+}
+
+.fragger-details .human {
+    color: #d7d7d7;
+}
+
+.fraggers-row .sg-caret-down {
+    font-size: 10px;
+    line-height: 20px;
+    opacity: 0;
+    transition: opacity .3s;
+}
+
+.tk {
+    font-weight: 600;
+}
+
+.fragger-details .tk {
+    color: #ff3131;
+}
+
+.kill-entry .tk {
+    color: rgb(227 227 227);
+}
+
+.disconnected {
+    color: #787878 !important;
+}
+
+@media (pointer:fine) {
+    .fraggers-row:hover {
+        background-color: #2d2d2d;
+        cursor: pointer;
+    }
+
+    .fraggers-row:hover .sg-caret-down {
+        opacity: 1;
+    }
+
+    .fraggers-row .fraggers-details:hover {
+        cursor: pointer;
+    }
+}
+
+.statistic__teamkills {
+    background-color: #f9f9f9;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    padding: 10px 0 5px 0;
+}
+
+.dark .leaflet-tile-loaded {
+    filter:brightness(0.45) contrast(2.59) grayscale(0.2) saturate(0.47);
+}
+
+.dark .unit-title {
+    text-shadow: 0 0 2px #333333;
+}
+
+.dark .west, .stats-pane .west { color: #1E8BFF;}
+.lobby-side-blufor { background-color: #1E8BFF;}
+.dark .west .unit-icon-man { background-image: url(/images/markers/man/man-west-n.svg);}
+.dark .west .unit-icon-apc { background-image: url(/images/markers/apc/apc-west-n.svg);}
+.dark .west .unit-icon-car { background-image: url(/images/markers/car/car-west-n.svg);}
+.dark .west .unit-icon-heli { background-image: url(/images/markers/heli/heli-west-n.svg);}
+.dark .west .unit-icon-tank { background-image: url(/images/markers/tank/tank-west-n.svg);}
+.dark .west .unit-icon-plane { background-image: url(/images/markers/plane/plane-west-n.svg);}
+.dark .west .unit-icon-sea { background-image: url(/images/markers/sea/sea-west-n.svg);}
+.dark .west .unit-icon-truck { background-image: url(/images/markers/truck/truck-west-n.svg); }
+.dark .west .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-west-n.svg); }
+
+.dark .east, .stats-pane .east { color: #fa6363; }
+.lobby-side-opfor {background-color: #fa6363; }
+.dark .east .unit-icon-man { background-image: url(/images/markers/man/man-east-n.svg);}
+.dark .east .unit-icon-apc { background-image: url(/images/markers/apc/apc-east-n.svg);}
+.dark .east .unit-icon-car { background-image: url(/images/markers/car/car-east-n.svg);}
+.dark .east .unit-icon-heli { background-image: url(/images/markers/heli/heli-east-n.svg);}
+.dark .east .unit-icon-tank { background-image: url(/images/markers/tank/tank-east-n.svg);}-n
+.dark .east .unit-icon-plane { background-image: url(/images/markers/plane/plane-east-n.svg);}
+.dark .east .unit-icon-sea { background-image: url(/images/markers/sea/sea-east-n.svg);}
+.dark .east .unit-icon-truck { background-image: url(/images/markers/truck/truck-east-n.svg);}
+.dark .east .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-east-n.svg); }
+
+.dark .guer, .stats-pane .guer { color: #37bd32;}
+.lobby-side-guer {background-color: #37bd32; }
+.dark .guer .unit-icon-man { background-image: url(/images/markers/man/man-guer-n.svg);}
+.dark .guer .unit-icon-apc { background-image: url(/images/markers/apc/apc-guer-n.svg);}
+.dark .guer .unit-icon-car { background-image: url(/images/markers/car/car-guer-n.svg);}
+.dark .guer .unit-icon-heli { background-image: url(/images/markers/heli/heli-guer-n.svg);}
+.dark .guer .unit-icon-tank { background-image: url(/images/markers/tank/tank-guer-n.svg);}
+.dark .guer .unit-icon-plane { background-image: url(/images/markers/plane/plane-guer-n.svg);}
+.dark .guer .unit-icon-sea { background-image: url(/images/markers/sea/sea-guer-n.svg);}
+.dark .guer .unit-icon-truck { background-image: url(/images/markers/truck/truck-guer-n.svg);}
+.dark .guer .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-guer-n.svg); }
+
+.dark .civ, .stats-pane .civ { color: #b963fa; }
+.lobby-side-civ {background-color: #b963fa; }
+.dark .civ .unit-icon-man { background-image: url(/images/markers/man/man-civ-n.svg);}
+.dark .civ .unit-icon-apc { background-image: url(/images/markers/apc/apc-civ-n.svg);}
+.dark .civ .unit-icon-car { background-image: url(/images/markers/car/car-civ-n.svg);}
+.dark .civ .unit-icon-heli { background-image: url(/images/markers/heli/heli-civ-n.svg);}
+.dark .civ .unit-icon-tank { background-image: url(/images/markers/tank/tank-civ-n.svg);}
+.dark .civ .unit-icon-plane { background-image: url(/images/markers/plane/plane-civ-n.svg);}
+.dark .civ .unit-icon-sea { background-image: url(/images/markers/sea/sea-civ-n.svg);}
+.dark .civ .unit-icon-truck { background-image: url(/images/markers/truck/truck-civ-n.svg);}
+.dark .civ .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-civ-n.svg); }
+
+.dark .empty, .stats-pane .empty { color: #d08907; }
+.dark .empty .unit-icon-man { background-image: url(/images/markers/man/man-empty-n.svg);}
+.dark .empty .unit-icon-apc { background-image: url(/images/markers/apc/apc-empty-n.svg);}
+.dark .empty .unit-icon-car { background-image: url(/images/markers/car/car-empty-n.svg);}
+.dark .empty .unit-icon-heli { background-image: url(/images/markers/heli/heli-empty-n.svg);}
+.dark .empty .unit-icon-tank { background-image: url(/images/markers/tank/tank-empty-n.svg);}
+.dark .empty .unit-icon-plane { background-image: url(/images/markers/plane/plane-empty-n.svg);}
+.dark .empty .unit-icon-sea { background-image: url(/images/markers/sea/sea-empty-n.svg);}
+.dark .empty .unit-icon-truck { background-image: url(/images/markers/truck/truck-empty-n.svg);}
+.dark .empty .unit-icon-static-weapon { background-image: url(/images/markers/static-weapon/static-weapon-empty-n.svg); }
+
+.none {
+    display: none !important;
+}
+
+.log p {
+    margin: 0.2rem 0 ;
+}
+
+.kill-entry {
+    padding: 0.2rem 0;
+    cursor:pointer;
+    transition: background-color .2s;
+}
+
+.kill-entry:hover { background-color: #565656;}
+
+
+@media only screen and (orientation:portrait) {
+    .desktop {
+        display: none;
+    }
+
+    .mobile {
+        display: block !important;
+    }
+
+    .statistic-sides {gap: 0.3rem;}
+
+    .statistic-sides .fragger-name { width: calc(100% - 4rem);}
+
+    .statistic-sides .kill { min-width: 2rem; }
+
+    .fraggers-row .sg-caret-down { opacity: 0.5; }
+
+    .fragger-details { margin-inline: 0.3rem;}
+
+    .right {
+        width: 100%;
+        right: -100%;
+    }
+    
+    .left {
+        width: 100%;
+        left: -100%;
+    }
+
+    .dialog {
+        width: 100vw;
+        height: calc(100vh - 6rem);
+        top: 3rem;
+        left: 0;
+    }
+
+    .footer__inner {
+        width: calc(100% - 3rem);
+        margin: 0;
+    }
+
+    .speeder {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        flex-flow: column-reverse;
+        z-index: 105;
+    }
+
+    .speeder__button {
+        display: none;
+    }
+
+    .speeder__button-active {
+        order: -1;
+        display: block;
+    }
+}
