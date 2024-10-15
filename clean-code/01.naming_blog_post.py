@@ -1,6 +1,5 @@
 from datetime import datetime
 
-
 # class Entity:
 #     def __init__(self, title, description, ymdhm):
 #         self.title = title
