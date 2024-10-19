@@ -1,45 +1,53 @@
 class Entity {
-    constructor({hitStrength, maxHealth, healthDivId}) {
+    hitDamage = 0;
+    health = 0;
+    maxHealth = 0;
+    maxHeal = 0;
 
-        this.hitStrength = hitStrength;
+    constructor({hitDamage, maxHealth, healthDivId}) {
+        this.hitDamage = hitDamage;
+        this.configureHealth({healthDivId, maxHealth});
+    }
+
+    configureHealth({healthDivId, maxHealth}) {
         this.maxHealth = maxHealth;
+        this.maxHeal = Math.round(maxHealth * 0.5);
 
         const healthDiv = document.getElementById(healthDivId);
-        this.healthBar = healthDiv.querySelector('progress');
         this.healthSpan = healthDiv.querySelector('span');
-
+        this.healthBar = healthDiv.querySelector('progress');
         this.healthBar.max = maxHealth;
+
         this.setHealth(maxHealth);
     }
 
-    attack(entity) {
-        entity.receiveDamage(this.hitStrength);
-    }
-
-    receiveDamage(damage) {
-        const dealtDamage = Math.floor(Math.random() * damage);
-        this.setHealth(this.health - dealtDamage);
-        return dealtDamage;
-    }
-
     setHealth(health) {
-        this.health = Math.max(0, Math.min(health, this.maxHealth));
+        this.health = Math.max(0, Math.min(Math.round(health), this.maxHealth));
         this.healthBar.value = this.health;
         this.healthSpan.textContent = this.health;
     }
 
-    increaseHealth(health) {
-        this.healthBar.value = Math.min(this.health + health, this.maxHealth);
+    receiveDamage(damage) {
+        const dealtDamage = Math.random() * damage;
+        this.setHealth(this.health - dealtDamage);
+        return dealtDamage;
+    }
+
+    heal() {
+        const health = this.health + Math.random() * this.maxHeal;
+        this.setHealth(health);
     }
 }
 
 class Player extends Entity {
-    constructor({bonusLives, hitStrength, maxHealth}) {
-        super({hitStrength, maxHealth, healthDivId: PLAYER_HP_ID});
+    constructor({bonusLives, hitDamage, maxHealth}) {
+        super({hitDamage, maxHealth, healthDivId: PLAYER_HP_ID});
 
         this.bonusLivesEl = document.getElementById(BONUS_LIVES_ID);
         this.setBonusLives(bonusLives);
 
+        this.strongAttack = hitDamage * 1.5;
+        this.healSpellStrength = maxHealth * 0.5
         this.name = 'Player';
     }
 
@@ -50,8 +58,8 @@ class Player extends Entity {
 }
 
 class Monster extends Entity {
-    constructor({hitStrength, maxHealth}) {
-        super({hitStrength, maxHealth, healthDivId: MONSTER_HP_ID});
+    constructor({hitDamage, maxHealth}) {
+        super({hitDamage, maxHealth, healthDivId: MONSTER_HP_ID});
 
         this.name = 'Monster';
     }
@@ -61,18 +69,21 @@ class UI {
     constructor(game) {
         this.game = game;
 
-        this.attackBtn = document.getElementById(ATTACH_BTN_ID);
+        this.attackBtn = document.getElementById(ATTACK_BTN_ID);
         this.strongAttackBtn = document.getElementById(STRONG_ATTACK_bTN_ID);
         this.healBtn = document.getElementById(HEAL_BTN_ID);
         this.logBtn = document.getElementById(LOG_BTN_ID);
+
         this.settingsDialog = document.getElementById(SETTING_DIALOG_ID);
         this.settingsForm = this.settingsDialog.querySelector('form');
         this.scoreDialog = document.getElementById(SCORE_DIALOG_ID);
         this.gameResult = this.scoreDialog.querySelector('h1');
         
-        this.attackBtn.addEventListener('click', this.attack.bind(this));
+        this.attackBtn.addEventListener('click', () => this.game.attack());
+        this.strongAttackBtn.addEventListener('click', () => this.game.attack(true));
+        this.healBtn.addEventListener('click', () => this.game.heal());
         this.settingsForm.addEventListener('submit', this.applySettings.bind(this));
-        this.scoreDialog.querySelector('button').addEventListener('click', this.startOver.bind(this));
+        this.scoreDialog.querySelector('button').addEventListener('click', () => this.startOver());
         
         this.setInitialValues();
     }
@@ -86,15 +97,10 @@ class UI {
             this.settingsForm[key].value = SETTINGS_DEFAULTS[key];
     }
 
-    attack() {
-        this.game.attack();
-    }
-
     applySettings(e) {
         e.preventDefault();
 
         const settings = this.getValidatedSettings();
-
         if (!settings)
             return;
 
@@ -117,7 +123,7 @@ class UI {
             }
 
             switch (keyName) {
-                case HIT_STRENGTH:
+                case HIT_DAMAGE:
                 case MAX_HEALTH: 
                     if (settingValue === 0) {
                         this.markSettingInvalid(keyName);
@@ -129,7 +135,7 @@ class UI {
             }
         }
 
-        if ((MAX_HEALTH in settings) && (HIT_STRENGTH in settings) && (BONUS_LIVES in settings))
+        if ((MAX_HEALTH in settings) && (HIT_DAMAGE in settings) && (BONUS_LIVES in settings))
             return settings;
         
         return null;
@@ -173,20 +179,30 @@ class Game {
     }
 
     start(settings) {
-        const {hitStrength, maxHealth, bonusLives} = settings;
+        const {hitDamage, maxHealth, bonusLives} = settings;
 
-        this.monster = new Monster({hitStrength, maxHealth});
-        this.player = new Player({hitStrength, maxHealth, bonusLives});
+        this.monster = new Monster({hitDamage, maxHealth});
+        this.player = new Player({hitDamage, maxHealth, bonusLives});
     }
 
-    attack() {
-        this.player.attack(this.monster);
-        this.monster.attack(this.player);
+    attack(isStrongAttack) {
+        this.monster.receiveDamage(isStrongAttack ? this.player.strongAttack : this.player.hitDamage);
+        this.player.receiveDamage(this.monster.hitDamage);
 
+        this.endRound();
+    }
+
+    heal() {
+        this.player.heal();
+        this.player.receiveDamage(this.monster.hitDamage);
+
+        this.endRound();
+    }
+
+    endRound() {
         if (this.player.health <= 0 || this.monster.health <= 0) {
-            if (this.player.health <= 0 && this.monster.health <= 0) {
+            if (this.player.health <= 0 && this.monster.health <= 0) 
                 this.setWinner();
-            }
 
             else if (this.player.health <= 0)
                 this.setWinner(this.monster.name);
