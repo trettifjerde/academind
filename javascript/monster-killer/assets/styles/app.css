@@ -1,0 +1,158 @@
+:root {
+  --dark: #2c2c2c;
+  --dark-trans: #2c2c2c71;
+  --red: #ff0062;
+  --purple: #a927f5;
+  --border-radius: 6px;
+
+}
+html {
+  font-family: sans-serif;
+}
+
+body {
+  background: var(--dark);
+}
+
+h1 {
+  margin-block: 3rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+progress {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 80%;
+  height: 2rem;
+  color: var(--red);
+  border: 1px solid var(--purple);
+}
+
+progress[value]::-webkit-progress-bar,
+progress[value] {
+  background-color: #eee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+}
+
+progress[value]::-webkit-progress-value {
+  background-color: var(--purple);
+  transition: all 0.2s ease-out;
+}
+
+progress[value]::-moz-progress-bar {
+  background-color: var(--purple);
+  transition: all 0.2s ease-out;
+}
+
+input {
+  background-color: transparent;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid gray;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input.invalid {
+  border-color: var(--red);
+}
+
+button {
+  font: inherit;
+  background: var(--red);
+  border: 1px solid var(--red);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  margin: 0.5rem;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:hover,
+button:active {
+  background: var(--purple);
+  border-color: var(--purple);
+}
+
+#health-levels,
+#controls {
+  margin: 2rem auto;
+  width: 30rem;
+  text-align: center;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  background: white;
+}
+
+#controls {
+  display: flex;
+  flex-direction: column;
+}
+
+#bonus-life {
+  font-weight: bold;
+  color: white;
+  background: var(--red);
+  border: 1px solid var(--red);
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  text-align: center;
+  margin: 0 0.5rem;
+}
+
+dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 20rem;
+  border-radius: var(--border-radius);
+  border: 1px solid gray;
+  padding: 1.5rem 3rem;
+}
+
+dialog::backdrop {
+  background-color: var(--dark-trans);
+}
+
+dialog button {
+  display: block;
+  margin-top: 2rem;
+  margin-inline: auto;
+}
+
+#settings form > div {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem;
+}
+
+#score h4 {
+  text-align: center;
+  color: var(--red);
+}
+
+.health-widget {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.health-widget span {
+  position: absolute;
+  color: var(--dark);
+  font-weight: 600;
+}
