@@ -9,20 +9,24 @@ class Transaction {
   }
 
   process() {
-    if (this.status !== 'OPEN')
-      this._throwError();
-  
     try {
-      const handler = Transaction.handlers[this.type][this.method];
-      handler(this);
+      if (this.status !== 'OPEN')
+        throw new Error();
+
+      this.executeTransaction();
     }
-    catch (error) {
-      this._throwError();
+
+    catch(error) {
+      this.handleError();
     }
   }
 
-  _throwError() {
-    throw new Error(`\nInvalid transaction:\n${this.toString()}\n`);
+  executeTransaction() {
+    Transaction.handlers[this.type][this.method](this);
+  }
+
+  handleError() {
+    showError(`\nInvalid transaction:\n${this.toString()}\n`);
   }
 
   toString() {
@@ -119,18 +123,15 @@ function main() {
 function processTransactions(transactions) {
 
   if (!transactions || !transactions.length) {
-    console.log('No transactions provided!');
+    showError('No transactions provided!');
     return;
   }
 
-  for (const transaction of transactions) {
-    try {
-      transaction.process();
-    }
-    catch (error) {
-      console.log(error.message || `Error processing transaction\n${transaction}`);
-    }
-  }
+  transactions.forEach(t => t.process());
+}
+
+function showError(message) {
+  console.log(message);
 }
 
 /*
