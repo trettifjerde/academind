@@ -17,3 +17,6 @@ const HEAL_BTN_ID = 'heal-btn';
 const LOG_BTN_ID = 'log-btn';
 const SETTING_DIALOG_ID = 'settings';
 const SCORE_DIALOG_ID = 'score';
+
+const SHOW_LOG = 'SHOW LOG';
+const HIDE_LOG = 'HIDE LOG';

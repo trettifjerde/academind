@@ -98,7 +98,8 @@ button:active {
 }
 
 #health-levels,
-#controls {
+#controls,
+#log {
   margin: 2rem auto;
   width: 30rem;
   text-align: center;
@@ -168,4 +169,8 @@ dialog button {
   position: absolute;
   color: var(--dark);
   font-weight: 600;
+}
+
+#log {
+  white-space: pre-line;
 }

@@ -32,13 +32,19 @@ class Entity {
     }
 
     receiveDamage(damage) {
-        const dealtDamage = Math.random() * damage;
+        const dealtDamage = Math.round(Math.random() * damage);
         this.setHealth(this.health - dealtDamage);
+
+        return {
+            damage: dealtDamage,
+            isReceived: true
+        }
     }
 
     heal() {
-        const health = this.health + Math.random() * this.maxHeal;
-        this.setHealth(health);
+        const healedHealth = Math.round(Math.random() * this.maxHeal);
+        this.setHealth(this.health + healedHealth);
+        return healedHealth;
     }
 }
 
@@ -60,10 +66,16 @@ class Player extends Entity {
     }
 
     receiveDamage(damage) {
-        if (damage > this.health && this.bonusLives) 
-            this.setBonusLives(this.bonusLives - 1)
+        if (damage > this.health && this.bonusLives) {
+            this.setBonusLives(this.bonusLives - 1);
+
+            return {
+                damage,
+                isReceived: false
+            }
+        }
         else 
-            super.receiveDamage(damage);
+            return super.receiveDamage(damage);
     }
 }
 
@@ -83,16 +95,20 @@ class UI {
         this.strongAttackBtn = document.getElementById(STRONG_ATTACK_bTN_ID);
         this.healBtn = document.getElementById(HEAL_BTN_ID);
         this.logBtn = document.getElementById(LOG_BTN_ID);
+        this.logEl = null;
 
         this.settingsDialog = document.getElementById(SETTING_DIALOG_ID);
         this.settingsForm = this.settingsDialog.querySelector('form');
         this.settingsResetButton = this.settingsDialog.querySelector('form button[type=button]');
+
         this.scoreDialog = document.getElementById(SCORE_DIALOG_ID);
         this.gameResult = this.scoreDialog.querySelector('h1');
         
         this.attackBtn.addEventListener('click', () => this.game.attack());
         this.strongAttackBtn.addEventListener('click', () => this.game.attack(true));
         this.healBtn.addEventListener('click', () => this.game.heal());
+        this.logBtn.addEventListener('click', this.toggleLog.bind(this));
+
         this.settingsForm.addEventListener('submit', this.applySettings.bind(this));
         this.settingsResetButton.addEventListener('click', this.resetSettings.bind(this));
         this.scoreDialog.querySelector('button').addEventListener('click', () => this.startOver());
@@ -170,11 +186,117 @@ class UI {
 
     startOver() {
         this.scoreDialog.close();
+        this._clearLog();
         this.openSettingsModal();
     }
 
     openSettingsModal() {
         this.settingsDialog.showModal();
+    }
+
+    toggleLog() {
+        if (this.logEl) 
+            this._hideLog();
+
+        else 
+            this._showLog();
+    }
+
+    updateLog() {
+        if (this.logEl)
+            this.logEl.innerHTML = this.game.log.getFullLog();
+    }
+
+    _showLog() {
+        
+        const logEl = document.createElement('section');
+        logEl.id = 'log';
+        logEl.innerHTML = this.game.log.getFullLog();
+        document.body.appendChild(logEl);
+
+        this.logEl = logEl;
+        this.logBtn.textContent = HIDE_LOG;
+    }
+
+    _hideLog() {
+        this.logEl?.remove();
+        this.logEl = null;
+        this.logBtn.textContent = SHOW_LOG;
+    }
+
+    _clearLog() {
+        this.game.log.clear();
+        this._hideLog();
+    }
+}
+
+class Log {
+    constructor(game) {
+        this.game = game;
+        this.events = [];
+    }
+
+    getFullLog() {
+        return this.events.join('\n---------------\n\n')
+    }
+
+    start(settings) {
+        this.events.push(`<b>GAME STARTED:</b>\nMax health: ${settings.maxHealth}\nDamage: ${settings.hitDamage}\nBonus lives: ${settings.bonusLives}\n`);
+    }
+
+    attack({playerInfo, monsterInfo, isStrongAttack}) {
+        let message = this._makeStartRoundEntry();
+        message += this._makeAttackEntry({
+            attacker: this.game.player,
+            hitInfo: monsterInfo,
+            isStrongAttack
+        });
+        message += this._makeAttackEntry({
+            attacker: this.game.monster,
+            hitInfo: playerInfo
+        });
+        this.events.push(message);
+    }
+
+    heal({heal, playerInfo}) {
+        let message = this._makeStartRoundEntry();
+        message += this._makeHealEntry(heal);
+        message += this._makeAttackEntry({
+            attacker: this.game.monster,
+            hitInfo: playerInfo
+        });
+        this.events.push(message);
+    }
+
+    setWinner(winner) {
+        this.events.push(`<b>GAME OVER:</b> ${winner ? 
+            `${winner.name} wins` : 
+            `${this.game.player.name} and ${this.game.monster.name} kill each other`
+        }\n`);
+    }
+
+    clear() {
+        this.events = [];
+    }
+
+    _makeStartRoundEntry() {
+        return `<b>ROUND ${this.events.length}</b>\n`;
+    }
+
+    _makeAttackEntry({attacker, hitInfo, isStrongAttack}) {
+        const victim = attacker === this.game.monster ? this.game.player : this.game.monster;
+        let message = `${attacker.name} hits ${victim.name} for ${hitInfo.damage} HP${isStrongAttack ? ' with their strong attack' : ''}`;
+
+        if (!hitInfo.isReceived) 
+            message += `, but is protected with their bonus life. Remaining lives: ${victim.bonusLives}`;
+
+        message += '\n';
+        
+        return message;        
+    }
+    
+    _makeHealEntry(heal) {
+        return `${this.game.player.name} heals for ${heal} HP\n`;
     }
 }
 
@@ -183,6 +305,7 @@ class Game {
         this.monster = null;
         this.player = null;
         this.ui = new UI(this);
+        this.log = new Log(this);
     }
     
     init() {
@@ -194,18 +317,23 @@ class Game {
 
         this.monster = new Monster({hitDamage, maxHealth});
         this.player = new Player({hitDamage, maxHealth, bonusLives});
+        this.log.start(settings);
     }
 
     attack(isStrongAttack) {
-        this.monster.receiveDamage(isStrongAttack ? this.player.strongAttack : this.player.hitDamage);
-        this.player.receiveDamage(this.monster.hitDamage);
+        const monsterInfo = this.monster.receiveDamage(isStrongAttack ? this.player.strongAttack : this.player.hitDamage);
+        const playerInfo = this.player.receiveDamage(this.monster.hitDamage);
+        
+        this.log.attack({monsterInfo, playerInfo, isStrongAttack});
 
         this.endRound();
     }
 
     heal() {
-        this.player.heal();
-        this.player.receiveDamage(this.monster.hitDamage);
+        const heal = this.player.heal();
+        const playerInfo = this.player.receiveDamage(this.monster.hitDamage);
+
+        this.log.heal({heal, playerInfo});
 
         this.endRound();
     }
@@ -219,9 +347,12 @@ class Game {
 
         else if (this.monster.isDead)
             this.setWinner(this.player);
+
+        this.ui.updateLog();
     }
 
     setWinner(winner) {
+        this.log.setWinner(winner);
         this.ui.setWinner(winner);
     }
 }
