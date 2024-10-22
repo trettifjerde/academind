@@ -9,6 +9,10 @@ class Entity {
         this.configureHealth({healthDivId, maxHealth});
     }
 
+    get isDead() {
+        return this.health <= 0;
+    }
+
     configureHealth({healthDivId, maxHealth}) {
         this.maxHealth = maxHealth;
         this.maxHeal = Math.round(maxHealth * 0.5);
@@ -30,7 +34,6 @@ class Entity {
     receiveDamage(damage) {
         const dealtDamage = Math.random() * damage;
         this.setHealth(this.health - dealtDamage);
-        return dealtDamage;
     }
 
     heal() {
@@ -55,6 +58,13 @@ class Player extends Entity {
         this.bonusLives = bonusLives;
         this.bonusLivesEl.textContent = bonusLives;
     }
+
+    receiveDamage(damage) {
+        if (damage > this.health && this.bonusLives) 
+            this.setBonusLives(this.bonusLives - 1)
+        else 
+            super.receiveDamage(damage);
+    }
 }
 
 class Monster extends Entity {
@@ -76,6 +86,7 @@ class UI {
 
         this.settingsDialog = document.getElementById(SETTING_DIALOG_ID);
         this.settingsForm = this.settingsDialog.querySelector('form');
+        this.settingsResetButton = this.settingsDialog.querySelector('form button[type=button]');
         this.scoreDialog = document.getElementById(SCORE_DIALOG_ID);
         this.gameResult = this.scoreDialog.querySelector('h1');
         
@@ -83,12 +94,9 @@ class UI {
         this.strongAttackBtn.addEventListener('click', () => this.game.attack(true));
         this.healBtn.addEventListener('click', () => this.game.heal());
         this.settingsForm.addEventListener('submit', this.applySettings.bind(this));
+        this.settingsResetButton.addEventListener('click', this.resetSettings.bind(this));
         this.scoreDialog.querySelector('button').addEventListener('click', () => this.startOver());
         
-        this.setInitialValues();
-    }
-
-    setInitialValues() {
         this.setDefaultSettingsFormValues();
     }
 
@@ -105,7 +113,7 @@ class UI {
             return;
 
         this.settingsDialog.close();
-        this.resetSettingsForm();
+        this.hideValidationErrors();
 
         this.game.start(settings);
     }
@@ -145,15 +153,18 @@ class UI {
         this.settingsForm[keyName].classList.add('invalid');
     }
 
-    resetSettingsForm() {
+    hideValidationErrors() {
         for (const el of this.settingsForm.elements)
             el.classList.remove('invalid');
+    }
 
+    resetSettings() {
+        this.hideValidationErrors();
         this.setDefaultSettingsFormValues();
     }
 
     setWinner(winner) {
-        this.gameResult.textContent = winner ? `${winner} wins!` : 'Player and Monster\nkill each other!';
+        this.gameResult.textContent = winner ? `${winner.name} wins!` : 'Player and Monster\nkill each other!';
         this.scoreDialog.showModal();
     }
 
@@ -200,16 +211,14 @@ class Game {
     }
 
     endRound() {
-        if (this.player.health <= 0 || this.monster.health <= 0) {
-            if (this.player.health <= 0 && this.monster.health <= 0) 
-                this.setWinner();
+        if (this.player.isDead && this.monster.isDead)
+            this.setWinner();
 
-            else if (this.player.health <= 0)
-                this.setWinner(this.monster.name);
+        else if (this.player.isDead)
+            this.setWinner(this.monster);
 
-            else 
-                this.setWinner(this.player.name);
-        }
+        else if (this.monster.isDead)
+            this.setWinner(this.player);
     }
 
     setWinner(winner) {
